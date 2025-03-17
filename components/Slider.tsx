@@ -60,10 +60,8 @@ const Slider = (props: SliderProps) => {
     width: fillWidth.value,
   }));
 
-  const tap = Gesture.Tap()
-    .onStart(() => {
-      console.log("Number of taps:");
-    })
+  const pan = Gesture.Pan()
+    // .minDistance(1)
     .onTouchesDown((event) => {
       console.log(
         "Finger down at:",
@@ -72,19 +70,11 @@ const Slider = (props: SliderProps) => {
       );
       fillWidth.value = event.allTouches[0].x;
     })
-    .onEnd(() => {
-      console.log("Finger released!");
-    });
-
-  const pan = Gesture.Pan()
-    .minDistance(1)
     .onStart(() => {
       prevFillWidth.value = fillWidth.value;
+      console.log("onStart hitting");
     })
     .onUpdate((event) => {
-      console.log("thumbStartPosition >> ", trackMinWidth);
-      console.log("thumbEndPosition >> ", trackMaxWidth);
-      console.log("width >> ", width);
       const newValue = prevFillWidth.value + event.translationX;
       const clampedValue = Math.min(
         Math.max(newValue, trackMinWidth),
@@ -99,12 +89,10 @@ const Slider = (props: SliderProps) => {
       <GestureHandlerRootView
         style={[styles.sliderCont, { height, paddingHorizontal }]}
       >
-        <GestureDetector gesture={tap}>
+        <GestureDetector gesture={pan}>
           <View style={[styles.track, {}]}>
             <Animated.View style={[styles.fill, animatedStyles]}>
-              <GestureDetector gesture={pan}>
-                <View style={[styles.thumb]} />
-              </GestureDetector>
+              <View style={[styles.thumb]} />
             </Animated.View>
           </View>
         </GestureDetector>
