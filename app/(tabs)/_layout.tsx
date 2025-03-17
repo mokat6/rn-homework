@@ -27,23 +27,23 @@ export default function TabLayout() {
         }),
       }}>
       <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Demo',
+          tabBarIcon: ({color}) => <IconSymbol size={28} name="house.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="login"
         options={{
           title: 'Login',
-          tabBarIcon: ({color}) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({color}) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({color}) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="demo"
-        options={{
-          title: 'Demo',
           tabBarIcon: ({color}) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
         }}
       />
