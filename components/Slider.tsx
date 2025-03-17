@@ -1,47 +1,53 @@
 import { transform } from "@babel/core";
 import React, { useEffect } from "react";
 // import { View } from "react-native-reanimated/lib/typescript/Animated";
-import {
-  Easing,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  Dimensions,
-} from "react-native";
+import { Easing, Image, Pressable, StyleSheet, Text, View, Dimensions } from "react-native";
 import Animated, {
   FadeIn,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
+  withReanimatedTimer,
   withTiming,
 } from "react-native-reanimated";
 
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from "react-native-gesture-handler";
+import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
+import { useThrottleCallback } from "@/hooks/useThrottleCallback";
+import { scaleZetaToMatchClamps } from "react-native-reanimated/lib/typescript/animation/springUtils";
 
 interface SliderProps {
   initValue: number;
   color: string;
   paddingHorizontal?: number;
   height?: number;
-  handleSliderChange: () => void;
+  handleSliderChange: (value: number) => void;
+  backgroundColor?: string;
 }
 
 // consts
-const THUMB_SIZE = 30;
+const THUMB_SIZE = 20;
+const OPACITY_MOUSE_DOWN = 1;
+const OPACITY_MOUSE_UP = 0;
+const SCALE_MOUSE_DOWN = 0.2;
+const SCALE_MOUSE_UP = 3;
 
-const END_POSITION = 200;
+const ANIMATION_DURATION_MOUSE_DOWN = 100;
+const ANIMATION_DURATION_MOUSE_UP = 500;
 
-function clamp({ val, min, max }: { val: number; min: number; max: number }) {
-  return Math.min(Math.max(val, min), max);
-}
+const DEFAULT_FILL_COLOR = "#00f";
 
-const { width, height } = Dimensions.get("screen");
+const { width } = Dimensions.get("screen");
 
+/**
+ * A custom slider component with values from 0 to 1.
+ *
+ * @param {Object} props - The props object for the slider component.
+ * @param {number} props.initValue - The initial value of the slider (between 0 and 1).
+ * @param {string} props.color - The color of the slider fill.
+ * @param {number} [props.paddingHorizontal=100] - The horizontal padding for the slider (optional, defaults to 100).
+ * @param {number} [props.height=220] - The height of the slider (optional, defaults to 220).
+ * @param {Function} props.handleSliderChange - A callback function that gets called when the slider value changes.
+ */
 const Slider = (props: SliderProps) => {
   const {
     initValue,
@@ -49,50 +55,64 @@ const Slider = (props: SliderProps) => {
     paddingHorizontal = 100,
     height = 220,
     handleSliderChange,
+    backgroundColor = "#E1E7EA",
   } = props;
   const fillWidth = useSharedValue(initValue);
   const prevFillWidth = useSharedValue(initValue);
-
   const trackMinWidth = THUMB_SIZE;
   const trackMaxWidth = width - 2 * paddingHorizontal;
 
-  const animatedStyles = useAnimatedStyle(() => ({
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(1);
+
+  const animationStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [{ scale: scale.value }],
+    };
+  });
+
+  const handleSliderChangeThrottled = useThrottleCallback(handleSliderChange, 333);
+
+  const sliderDragStyle = useAnimatedStyle(() => ({
     width: fillWidth.value,
   }));
 
   const pan = Gesture.Pan()
-    // .minDistance(1)
     .onTouchesDown((event) => {
-      console.log(
-        "Finger down at:",
-        event.allTouches[0].x,
-        event.allTouches[0].y
-      );
       fillWidth.value = event.allTouches[0].x;
     })
     .onStart(() => {
       prevFillWidth.value = fillWidth.value;
-      console.log("onStart hitting");
+      opacity.value = OPACITY_MOUSE_DOWN; //withTiming(OPACITY_MOUSE_DOWN, { duration: ANIMATION_DURATION_MOUSE_DOWN });
+      scale.value = SCALE_MOUSE_DOWN; //withTiming(SCALE_MOUSE_DOWN, { duration: ANIMATION_DURATION_MOUSE_DOWN });
     })
     .onUpdate((event) => {
       const newValue = prevFillWidth.value + event.translationX;
-      const clampedValue = Math.min(
-        Math.max(newValue, trackMinWidth),
-        trackMaxWidth
-      );
+      const clampedValue = Math.min(Math.max(newValue, trackMinWidth), trackMaxWidth);
       fillWidth.value = clampedValue;
+
+      console.log("fillWidth.value >> ", fillWidth.value);
+      console.log("trackMaxWidth >> ", trackMaxWidth - paddingHorizontal);
+      const valueRatio = (fillWidth.value - paddingHorizontal / 2) / (trackMaxWidth - paddingHorizontal / 2);
+      runOnJS(handleSliderChangeThrottled)(valueRatio);
     })
-    .runOnJS(true);
+    .onEnd(() => {
+      opacity.value = withTiming(OPACITY_MOUSE_UP, { duration: ANIMATION_DURATION_MOUSE_UP });
+      scale.value = withTiming(SCALE_MOUSE_UP, { duration: ANIMATION_DURATION_MOUSE_UP });
+    });
 
   return (
     <>
-      <GestureHandlerRootView
-        style={[styles.sliderCont, { height, paddingHorizontal }]}
-      >
+      <GestureHandlerRootView style={[styles.sliderCont, { height, paddingHorizontal, backgroundColor }]}>
         <GestureDetector gesture={pan}>
           <View style={[styles.track, {}]}>
-            <Animated.View style={[styles.fill, animatedStyles]}>
-              <View style={[styles.thumb]} />
+            <Animated.View style={[styles.fill, { backgroundColor: color }, sliderDragStyle]}>
+              <View style={[styles.thumb, { backgroundColor: color }]}>
+                <Animated.View
+                  style={[styles.thumb, styles.thumbAnimation, { backgroundColor: color }, animationStyle]}
+                />
+              </View>
             </Animated.View>
           </View>
         </GestureDetector>
@@ -103,7 +123,7 @@ const Slider = (props: SliderProps) => {
 
 const styles = StyleSheet.create({
   sliderCont: {
-    backgroundColor: "lightblue",
+    // backgroundColor: "#E1E7EA",
     // height: 220, // Fixed height
     alignItems: "center", // Horizontally center the child
     justifyContent: "center", // Vertically center the child
@@ -111,23 +131,29 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 55,
   },
   track: {
-    backgroundColor: "hotpink",
-    height: 15, // Increase the height to include padding
+    backgroundColor: "#fff",
+    height: 8, // Increase the height to include padding
     width: "100%",
-    borderRadius: 10,
+    borderRadius: 8,
   },
   fill: {
-    backgroundColor: "blue",
+    backgroundColor: DEFAULT_FILL_COLOR,
     flex: 1,
     justifyContent: "center",
     alignItems: "flex-end",
-    borderRadius: 10,
+    borderRadius: 8,
   },
   thumb: {
     width: THUMB_SIZE,
     height: THUMB_SIZE,
-    backgroundColor: "red",
+    backgroundColor: DEFAULT_FILL_COLOR,
     borderRadius: THUMB_SIZE / 2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  thumbAnimation: {
+    backgroundColor: DEFAULT_FILL_COLOR,
+    opacity: 0.7,
   },
 });
 
