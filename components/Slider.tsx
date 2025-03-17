@@ -60,9 +60,21 @@ const Slider = (props: SliderProps) => {
     width: fillWidth.value,
   }));
 
-  const tap = Gesture.Tap().onStart(() => {
-    console.log("Number of taps:");
-  });
+  const tap = Gesture.Tap()
+    .onStart(() => {
+      console.log("Number of taps:");
+    })
+    .onTouchesDown((event) => {
+      console.log(
+        "Finger down at:",
+        event.allTouches[0].x,
+        event.allTouches[0].y
+      );
+      fillWidth.value = event.allTouches[0].x;
+    })
+    .onEnd(() => {
+      console.log("Finger released!");
+    });
 
   const pan = Gesture.Pan()
     .minDistance(1)
@@ -84,19 +96,19 @@ const Slider = (props: SliderProps) => {
 
   return (
     <>
-      <View style={[styles.sliderCont, { height, paddingHorizontal }]}>
-        <View style={[styles.track, {}]}>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <GestureDetector gesture={tap}>
-              <Animated.View style={[styles.fill, animatedStyles]}>
-                <GestureDetector gesture={pan}>
-                  <View style={[styles.thumb]} />
-                </GestureDetector>
-              </Animated.View>
-            </GestureDetector>
-          </GestureHandlerRootView>
-        </View>
-      </View>
+      <GestureHandlerRootView
+        style={[styles.sliderCont, { height, paddingHorizontal }]}
+      >
+        <GestureDetector gesture={tap}>
+          <View style={[styles.track, {}]}>
+            <Animated.View style={[styles.fill, animatedStyles]}>
+              <GestureDetector gesture={pan}>
+                <View style={[styles.thumb]} />
+              </GestureDetector>
+            </Animated.View>
+          </View>
+        </GestureDetector>
+      </GestureHandlerRootView>
     </>
   );
 };
