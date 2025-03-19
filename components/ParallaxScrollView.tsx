@@ -5,6 +5,8 @@ import {ThemedView} from '@/components/ThemedView';
 import {useBottomTabOverflow} from '@/components/ui/TabBarBackground';
 import {useColorScheme} from '@/hooks/useColorScheme';
 import Svg, {Path} from 'react-native-svg';
+import OMS_Blue from '@/assets/images/OMS_Blue.svg';
+import Logo from '@/assets/images/Logo.svg';
 
 const HEADER_HEIGHT = 290; // Static header height
 
@@ -38,7 +40,7 @@ export default function ParallaxScrollView({children, headerImage, headerBackgro
   });
 
   const CircularSeparator = () => {
-    const quadBezierHeight = screenWidth / 9.5; // the aspect ratio for one eighth of a perfect circle
+    const quadBezierHeight = Math.max(screenWidth / 9.5); // the aspect ratio for one eighth of a perfect circle
 
     const controlPoint = {
       x: screenWidth / 2,
@@ -72,7 +74,7 @@ export default function ParallaxScrollView({children, headerImage, headerBackgro
         ref={scrollRef}
         scrollEventThrottle={16}
         scrollIndicatorInsets={{bottom}}
-        contentContainerStyle={{paddingBottom: bottom}}>
+        contentContainerStyle={{paddingBottom: bottom, flexGrow: 1}}>
         <Animated.View
           style={[styles.header, {backgroundColor: headerBackgroundColor[colorScheme]}, headerAnimatedStyle]}>
           {headerImage}
@@ -81,11 +83,18 @@ export default function ParallaxScrollView({children, headerImage, headerBackgro
         {/* Insert dynamically generated circular separator */}
 
         <CircularSeparator />
+        <View style={{alignItems: 'center', padding: 20, backgroundColor: '#fff'}}>
+          <OMS_Blue style={{}} width={100} />
+        </View>
 
         <ThemedView style={styles.content}>
           {children}
           <Text>he</Text>
         </ThemedView>
+
+        <View style={{alignItems: 'center', backgroundColor: 'salmon'}}>
+          <Logo width={47} />
+        </View>
       </Animated.ScrollView>
     </ThemedView>
   );
@@ -98,7 +107,6 @@ const styles = StyleSheet.create({
   header: {
     height: HEADER_HEIGHT,
     overflow: 'hidden',
-    flex: 1,
   },
   content: {
     flex: 1,

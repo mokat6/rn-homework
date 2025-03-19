@@ -52,13 +52,7 @@ export default function LoginScreen() {
         paddingHorizontal={40}
         // height={10}
       />
-      <Slider
-        handleSliderChange={handleSliderChange}
-        initValue={INIT_VALUE}
-        color="#00A6F5"
-        paddingHorizontal={40}
-        // height={10}
-      />
+
       <View>
         <Text>{number}</Text>
       </View>
