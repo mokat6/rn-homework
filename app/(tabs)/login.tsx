@@ -1,4 +1,4 @@
-import {Image, StyleSheet, Platform, View, Text, Dimensions} from 'react-native';
+import {Image, StyleSheet, Platform, View, Text, Dimensions, TextInput} from 'react-native';
 
 import {HelloWave} from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -13,6 +13,7 @@ import {LinearGradient} from 'expo-linear-gradient';
 import Arrows from '@/assets/images/arrows.svg';
 import LanguagePicker from '@/components/LanguagePicker';
 import LanguageSwitch from '@/components/LanguageSwitch';
+import MyInput from '@/components/MyInput';
 // import * as Svg from 'react-native-svg';
 
 const INIT_VALUE = 0.38;
@@ -36,30 +37,54 @@ export default function LoginScreen() {
     );
   };
 
+  const handleBlur = () => {
+    console.log('blurrrrrrrrrrrr');
+  };
+
+  const handleChangeText = () => {
+    console.log('on change workin');
+  };
+  const handleEndEditing = () => {
+    console.log('handleEndEditing!!!!!');
+  };
+
+  const handlePressOut = () => {
+    console.log('handlePressOut !!');
+  };
+
+  const handlePressIn = () => {
+    console.log('handlePressIn   <><>');
+  };
+
+  const handleSelectionChange = () => {
+    console.log('handleSelectionChange');
+  };
   return (
     <ParallaxScrollView headerBackgroundColor={{light: '#A1CEDC', dark: '#1D3D47'}} headerImage={headerX()}>
-      <Slider
-        handleSliderChange={handleSliderChange}
-        initValue={INIT_VALUE}
-        color="#00A6F5"
-        paddingHorizontal={40}
-        // height={10}
-      />
-      <Slider
-        handleSliderChange={handleSliderChange}
-        initValue={INIT_VALUE}
-        color="#00A6F5"
-        paddingHorizontal={40}
-        // height={10}
+      <TextInput
+        editable
+        maxLength={40}
+        style={styles.textInput}
+        cursorColor="red"
+        // inputMode="email"
+        // keyboardType="visible-password"
+        onBlur={handleBlur}
+        onChangeText={handleChangeText}
+        onEndEditing={handleEndEditing}
+        onPressOut={handlePressOut}
+        onPressIn={handlePressIn}
+        onSelectionChange={handleSelectionChange}
+        placeholder="El. pastas"
+        returnKeyLabel="sadxx"
+        returnKeyType="go"
+        // secureTextEntry
+        selectTextOnFocus
+        // value
       />
 
-      <View>
-        <Text>{number}</Text>
-      </View>
+      <MyInput placeholder="El. paštas" />
+      <MyInput placeholder="Slaptažodis" isPassword />
     </ParallaxScrollView>
-    // <View>
-    //   <Dnd />
-    // </View>
   );
 }
 
@@ -107,5 +132,11 @@ const styles = StyleSheet.create({
     marginRight: 50,
     borderWidth: 1, // Sets the border thickness to 1px
     borderColor: 'black', // Sets the border color to black
+  },
+  textInput: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
   },
 });

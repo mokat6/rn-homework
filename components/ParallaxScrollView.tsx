@@ -87,12 +87,9 @@ export default function ParallaxScrollView({children, headerImage, headerBackgro
           <OMS_Blue style={{}} width={100} />
         </View>
 
-        <ThemedView style={styles.content}>
-          {children}
-          <Text>he</Text>
-        </ThemedView>
+        <ThemedView style={styles.content}>{children}</ThemedView>
 
-        <View style={{alignItems: 'center', backgroundColor: 'salmon'}}>
+        <View style={{alignItems: 'center'}}>
           <Logo width={47} />
         </View>
       </Animated.ScrollView>
