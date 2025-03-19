@@ -7,7 +7,7 @@ const local_data = [
   {
     value: '1',
     lable: 'LT',
-    image: require('../assets/images/ltf.png'),
+    image: 'https://wefewfe',
   },
   {
     value: '2',

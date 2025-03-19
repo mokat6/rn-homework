@@ -1,12 +1,12 @@
-import type {PropsWithChildren, ReactElement} from 'react';
-import {StyleSheet} from 'react-native';
+import {useMemo, type PropsWithChildren, type ReactElement} from 'react';
+import {Dimensions, StyleSheet, Text, useWindowDimensions, View} from 'react-native';
 import Animated, {interpolate, useAnimatedRef, useAnimatedStyle, useScrollViewOffset} from 'react-native-reanimated';
-
 import {ThemedView} from '@/components/ThemedView';
 import {useBottomTabOverflow} from '@/components/ui/TabBarBackground';
 import {useColorScheme} from '@/hooks/useColorScheme';
+import Svg, {Path} from 'react-native-svg';
 
-const HEADER_HEIGHT = 250;
+const HEADER_HEIGHT = 290; // Static header height
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
@@ -18,6 +18,8 @@ export default function ParallaxScrollView({children, headerImage, headerBackgro
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
   const bottom = useBottomTabOverflow();
+  const {width: screenWidth} = useWindowDimensions();
+
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -35,6 +37,35 @@ export default function ParallaxScrollView({children, headerImage, headerBackgro
     };
   });
 
+  const CircularSeparator = () => {
+    const quadBezierHeight = screenWidth / 9.5; // the aspect ratio for one eighth of a perfect circle
+
+    const controlPoint = {
+      x: screenWidth / 2,
+      y: -quadBezierHeight,
+    };
+
+    const endPoint = {
+      x: screenWidth,
+      y: quadBezierHeight,
+    };
+
+    const svgPath = `
+    M 0 ${quadBezierHeight} 
+    Q ${controlPoint.x} ${controlPoint.y} ${endPoint.x} ${endPoint.y} 
+    H 0 
+    Z
+    `;
+
+    return (
+      <View style={{marginTop: -quadBezierHeight}}>
+        <Svg height={quadBezierHeight} width={screenWidth} viewBox={`0 0 ${screenWidth} ${quadBezierHeight}`}>
+          <Path d={svgPath} fill="#fff" />
+        </Svg>
+      </View>
+    );
+  };
+
   return (
     <ThemedView style={styles.container}>
       <Animated.ScrollView
@@ -46,7 +77,15 @@ export default function ParallaxScrollView({children, headerImage, headerBackgro
           style={[styles.header, {backgroundColor: headerBackgroundColor[colorScheme]}, headerAnimatedStyle]}>
           {headerImage}
         </Animated.View>
-        <ThemedView style={styles.content}>{children}</ThemedView>
+
+        {/* Insert dynamically generated circular separator */}
+
+        <CircularSeparator />
+
+        <ThemedView style={styles.content}>
+          {children}
+          <Text>he</Text>
+        </ThemedView>
       </Animated.ScrollView>
     </ThemedView>
   );
@@ -63,7 +102,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    // padding: 32,
     padding: 0,
     gap: 16,
     overflow: 'hidden',
