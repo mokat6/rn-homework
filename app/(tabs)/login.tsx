@@ -14,6 +14,7 @@ import Arrows from '@/assets/images/arrows.svg';
 import LanguagePicker from '@/components/LanguagePicker';
 import LanguageSwitch from '@/components/LanguageSwitch';
 import MyInput from '@/components/MyInput';
+import AppButton from '@/components/AppButton';
 // import * as Svg from 'react-native-svg';
 
 const INIT_VALUE = 0.38;
@@ -84,6 +85,12 @@ export default function LoginScreen() {
 
       <MyInput placeholder="El. paštas" />
       <MyInput placeholder="Slaptažodis" isPassword />
+      <AppButton primary> Im in my prime</AppButton>
+      <AppButton primary disabled>
+        you're cooked
+      </AppButton>
+      <AppButton secondary>second dairy</AppButton>
+      <AppButton outline> built different</AppButton>
     </ParallaxScrollView>
   );
 }
