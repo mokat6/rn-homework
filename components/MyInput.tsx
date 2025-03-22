@@ -14,12 +14,14 @@ interface MyInputProps {
 }
 
 const MyInput = (props: MyInputProps) => {
-  const {isPassword, placeholder} = props;
+  const {isPassword, placeholder, onChangeText, onEndEditing} = props;
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   return (
     <View style={styles.container}>
       <TextInput
+        onChangeText={onChangeText}
+        onEndEditing={onEndEditing}
         style={styles.input}
         placeholder={placeholder}
         secureTextEntry={isPassword && !isPasswordVisible} // Toggle password visibility

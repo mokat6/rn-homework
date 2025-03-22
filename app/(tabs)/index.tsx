@@ -6,6 +6,7 @@ import {ThemedText} from '@/components/ThemedText';
 import {ThemedView} from '@/components/ThemedView';
 import Slider from '@/components/Slider';
 import {useState} from 'react';
+import AppButton from '@/components/AppButton';
 
 const INIT_VALUE = 0.38;
 
@@ -29,6 +30,14 @@ export default function DemoScreen() {
         />
         <View>
           <Text>{number}</Text>
+        </View>
+        <View style={{paddingTop: 100}}>
+          <AppButton primary> Im in my prime</AppButton>
+          <AppButton primary disabled>
+            you're cooked
+          </AppButton>
+          <AppButton secondary>second dairy</AppButton>
+          <AppButton outline> built different</AppButton>
         </View>
       </View>
     </>

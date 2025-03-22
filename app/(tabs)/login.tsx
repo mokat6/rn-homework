@@ -5,7 +5,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import {ThemedText} from '@/components/ThemedText';
 import {ThemedView} from '@/components/ThemedView';
 import Slider from '@/components/Slider';
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 import {LinearGradient} from 'expo-linear-gradient';
 
 // import {SvgXml} from 'react-native-svg';
@@ -15,19 +15,16 @@ import LanguagePicker from '@/components/LanguagePicker';
 import LanguageSwitch from '@/components/LanguageSwitch';
 import MyInput from '@/components/MyInput';
 import AppButton from '@/components/AppButton';
+import {login} from '@/api/auth';
 // import * as Svg from 'react-native-svg';
 
 const INIT_VALUE = 0.38;
 const {height: screenHeight} = Dimensions.get('window'); // Get full screen height
 
 export default function LoginScreen() {
-  const [number, setNumber] = useState(INIT_VALUE);
-
-  const handleSliderChange = (newValue: number) => {
-    console.log('slider change');
-    setNumber(newValue);
-  };
-
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string>('');
   const headerX = () => {
     return (
       <LinearGradient colors={['#2575FC', '#6A11CB']} style={[styles.headerContainer, {height: screenHeight}]}>
@@ -38,59 +35,40 @@ export default function LoginScreen() {
     );
   };
 
-  const handleBlur = () => {
-    console.log('blurrrrrrrrrrrr');
-  };
+  const handleChangeEmail = useCallback((text: string) => {
+    setEmail(text);
+  }, []);
 
-  const handleChangeText = () => {
-    console.log('on change workin');
-  };
+  const handleChangePassword = useCallback((text: string) => {
+    setPassword(text);
+  }, []);
+
   const handleEndEditing = () => {
-    console.log('handleEndEditing!!!!!');
+    console.log('handleEndEditing!!!!! >> ');
   };
 
-  const handlePressOut = () => {
-    console.log('handlePressOut !!');
+  const onPress = async () => {
+    console.log('pressing');
+    console.log('id: ', email);
+    console.log('password: ', password);
+
+    try {
+      await login({email, password});
+      console.log('in component try after log in');
+    } catch (err) {
+      console.log('catching errors');
+      setError('Login failed, please try again.');
+    }
   };
 
-  const handlePressIn = () => {
-    console.log('handlePressIn   <><>');
-  };
-
-  const handleSelectionChange = () => {
-    console.log('handleSelectionChange');
-  };
   return (
     <ParallaxScrollView headerBackgroundColor={{light: '#A1CEDC', dark: '#1D3D47'}} headerImage={headerX()}>
-      <TextInput
-        editable
-        maxLength={40}
-        style={styles.textInput}
-        cursorColor="red"
-        // inputMode="email"
-        // keyboardType="visible-password"
-        onBlur={handleBlur}
-        onChangeText={handleChangeText}
-        onEndEditing={handleEndEditing}
-        onPressOut={handlePressOut}
-        onPressIn={handlePressIn}
-        onSelectionChange={handleSelectionChange}
-        placeholder="El. pastas"
-        returnKeyLabel="sadxx"
-        returnKeyType="go"
-        // secureTextEntry
-        selectTextOnFocus
-        // value
-      />
-
-      <MyInput placeholder="El. paštas" />
-      <MyInput placeholder="Slaptažodis" isPassword />
-      <AppButton primary> Im in my prime</AppButton>
-      <AppButton primary disabled>
-        you're cooked
+      <MyInput placeholder="El. paštas" onChangeText={handleChangeEmail} onEndEditing={handleEndEditing} />
+      <MyInput placeholder="Slaptažodis" onChangeText={handleChangePassword} isPassword />
+      <AppButton primary onPress={onPress}>
+        Im in my prime
       </AppButton>
-      <AppButton secondary>second dairy</AppButton>
-      <AppButton outline> built different</AppButton>
+      {error ? <Text>{error}</Text> : null}
     </ParallaxScrollView>
   );
 }
