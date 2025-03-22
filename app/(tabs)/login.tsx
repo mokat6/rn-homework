@@ -5,7 +5,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import {ThemedText} from '@/components/ThemedText';
 import {ThemedView} from '@/components/ThemedView';
 import Slider from '@/components/Slider';
-import {useCallback, useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {LinearGradient} from 'expo-linear-gradient';
 
 // import {SvgXml} from 'react-native-svg';
@@ -25,6 +25,8 @@ export default function LoginScreen() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const passwordRef = useRef<TextInput>(null);
+
   const headerX = () => {
     return (
       <LinearGradient colors={['#2575FC', '#6A11CB']} style={[styles.headerContainer, {height: screenHeight}]}>
@@ -61,10 +63,31 @@ export default function LoginScreen() {
     }
   };
 
+  const handleEmailSubmit = useCallback(() => {
+    console.log('handlling email submit');
+    passwordRef.current?.focus();
+  }, []);
+
   return (
     <ParallaxScrollView headerBackgroundColor={{light: '#A1CEDC', dark: '#1D3D47'}} headerImage={headerX()}>
-      <MyInput placeholder="El. paštas" onChangeText={handleChangeEmail} onEndEditing={handleEndEditing} />
-      <MyInput placeholder="Slaptažodis" onChangeText={handleChangePassword} isPassword />
+      <MyInput
+        placeholder="El. paštas"
+        autoCapitalize="none"
+        keyboardType="email-address"
+        onChangeText={handleChangeEmail}
+        onEndEditing={handleEmailSubmit}
+        returnKeyType="next"
+      />
+      <MyInput
+        ref={passwordRef}
+        autoCapitalize="none"
+        returnKeyType="send"
+        placeholder="Slaptažodis"
+        onChangeText={handleChangePassword}
+        isPassword
+        onSubmitEditing={onPress}
+      />
+
       <AppButton primary onPress={onPress}>
         Im in my prime
       </AppButton>

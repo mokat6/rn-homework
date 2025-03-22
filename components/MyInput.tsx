@@ -1,30 +1,43 @@
-import {ReturnKeyTypeOptions, StyleSheet, Text, TextInput, TouchableOpacity, View, ViewStyle} from 'react-native';
-import React, {useState} from 'react';
+import {
+  ReturnKeyTypeOptions,
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputProps,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
+import React, {forwardRef, useState} from 'react';
 import {Ionicons} from '@expo/vector-icons'; // Import icons from expo or use react-native-vector-icons
 
-interface MyInputProps {
-  secureTextEntry?: boolean;
-  maxLength?: number;
+type MyInputProps = Pick<
+  TextInputProps,
+  | 'secureTextEntry'
+  | 'maxLength'
+  | 'onChangeText'
+  | 'onEndEditing'
+  | 'placeholder'
+  | 'returnKeyType'
+  | 'autoCapitalize'
+  | 'keyboardType'
+  | 'returnKeyType'
+  | 'onSubmitEditing'
+> & {
   style?: ViewStyle;
-  onChangeText?: (text: string) => void;
-  onEndEditing?: () => void;
-  placeholder?: string;
-  returnKeyType?: ReturnKeyTypeOptions;
   isPassword?: boolean;
-}
+};
 
-const MyInput = (props: MyInputProps) => {
-  const {isPassword, placeholder, onChangeText, onEndEditing} = props;
+const MyInput = forwardRef<TextInput, MyInputProps>(({isPassword, style, ...props}, ref) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <TextInput
-        onChangeText={onChangeText}
-        onEndEditing={onEndEditing}
+        ref={ref}
         style={styles.input}
-        placeholder={placeholder}
         secureTextEntry={isPassword && !isPasswordVisible} // Toggle password visibility
+        {...props}
       />
       {isPassword && (
         <TouchableOpacity style={styles.icon} onPress={() => setIsPasswordVisible(prev => !prev)}>
@@ -33,7 +46,7 @@ const MyInput = (props: MyInputProps) => {
       )}
     </View>
   );
-};
+});
 
 export default MyInput;
 
