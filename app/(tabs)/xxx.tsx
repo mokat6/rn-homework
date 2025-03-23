@@ -4,11 +4,11 @@ import Base from '@/components/Base';
 import MyInput from '@/components/MyInput';
 import {login} from '@/api/auth';
 import AppButton from '@/components/AppButton';
+import Toast from 'react-native-toast-message';
 
 const xxx = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string>('');
   const passwordRef = useRef<TextInput>(null);
   const [isValid, setIsValid] = useState(false);
 
@@ -35,8 +35,20 @@ const xxx = () => {
       await login({email, password});
       console.log('in component try after log in');
     } catch (err) {
-      console.log('catching errors');
-      setError('Login failed, please try again.');
+      let errorMessage = 'An unexpected error occurred';
+      if (err instanceof Error) {
+        console.log('Handling login failure:', err.message);
+        errorMessage = err.message;
+      }
+      console.log(errorMessage);
+
+      Toast.show({
+        type: 'error',
+        text1: errorMessage,
+        // text2: 'Incorrect email or password',
+        position: 'bottom',
+        visibilityTime: 3000,
+      });
     }
   };
 
@@ -68,7 +80,6 @@ const xxx = () => {
       <AppButton primary onPress={onPress} disabled={!isValid}>
         Prisijungti
       </AppButton>
-      {error ? <Text>{error}</Text> : null}
     </Base>
   );
 };
