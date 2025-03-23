@@ -4,6 +4,7 @@ import {useWindowDimensions} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import flags from '@/constants/flags';
 import Shevron from '@/assets/images/shevron.svg';
+import {useLanguage} from '@/contexts/LanguageContext';
 
 interface LanguageItem {
   value: string;
@@ -18,10 +19,10 @@ const local_data: LanguageItem[] = [
 ];
 
 const LanguageSwitch = ({style, value}: {style?: ViewStyle; value: string}) => {
-  const [selected, setSelected] = useState<string>(value);
+  const {language, setLanguage} = useLanguage();
   const [showList, setShowList] = useState(false);
   const [buttonPosition, setButtonPosition] = useState({x: 0, y: 0, width: 0, height: 0});
-  const buttonRef = useRef<View>(null); // Create a ref for the button
+  const buttonRef = useRef<View>(null);
   const {width: screenW, height: screenH} = useWindowDimensions();
 
   const measure = useCallback(() => {
@@ -54,7 +55,7 @@ const LanguageSwitch = ({style, value}: {style?: ViewStyle; value: string}) => {
       <TouchableOpacity ref={buttonRef} onLayout={measure} onPress={() => setShowList(true)} style={styles.button}>
         {/* <Text style={styles.selectionText}>{selected || 'Select Language'}</Text> */}
         {renderItem(
-          local_data.find(language => language.value === selected),
+          local_data.find(languageItem => languageItem.value === language),
           '#fff',
         )}
         <Shevron style={styles.shevron} />
@@ -69,7 +70,7 @@ const LanguageSwitch = ({style, value}: {style?: ViewStyle; value: string}) => {
               renderItem={({item}) => (
                 <TouchableOpacity
                   onPress={() => {
-                    setSelected(item.value);
+                    setLanguage(item.value);
                     setShowList(false);
                   }}
                   style={styles.item}>
