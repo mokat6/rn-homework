@@ -1,3 +1,4 @@
+import {useRouter} from 'expo-router';
 import {StyleSheet, Text, TextInput, View} from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Base from '@/components/Base';
@@ -13,6 +14,7 @@ const xxx = () => {
   const passwordRef = useRef<TextInput>(null);
   const [isValid, setIsValid] = useState(false);
   const {t} = useLanguage();
+  const router = useRouter();
 
   const handleChangeEmail = useCallback((text: string) => {
     setEmail(text);
@@ -36,6 +38,7 @@ const xxx = () => {
     try {
       await login({email, password});
       console.log('in component try after log in');
+      router.push('/profile');
     } catch (err) {
       let errorMessage = 'An unexpected error occurred';
       if (err instanceof Error) {
