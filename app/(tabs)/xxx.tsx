@@ -69,6 +69,7 @@ const xxx = () => {
         onChangeText={handleChangeEmail}
         onEndEditing={handleEmailSubmit}
         returnKeyType="next"
+        floating
       />
       <MyInput
         ref={passwordRef}
@@ -78,6 +79,7 @@ const xxx = () => {
         onChangeText={handleChangePassword}
         isPassword
         onSubmitEditing={onPress}
+        floating
       />
 
       <AppButton primary onPress={onPress} disabled={!isValid}>
