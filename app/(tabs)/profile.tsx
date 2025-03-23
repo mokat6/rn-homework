@@ -1,3 +1,5 @@
+import {useRouter} from 'expo-router';
+
 import {StyleSheet, Text, TextInput, View} from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Base from '@/components/Base';
@@ -8,6 +10,7 @@ import {useLanguage} from '@/contexts/LanguageContext';
 
 const profile = () => {
   const {t} = useLanguage();
+  const router = useRouter();
 
   console.log('RENDERS');
 
@@ -17,6 +20,7 @@ const profile = () => {
     try {
       await logout();
       console.log('after log out ()');
+      router.replace('/');
     } catch (err) {
       let errorMessage = 'An unexpected error occurred';
       if (err instanceof Error) {

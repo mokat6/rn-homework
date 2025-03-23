@@ -8,7 +8,7 @@ import AppButton from '@/components/AppButton';
 import Toast from 'react-native-toast-message';
 import {useLanguage} from '@/contexts/LanguageContext';
 
-const xxx = () => {
+const gatekeeper = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const passwordRef = useRef<TextInput>(null);
@@ -38,7 +38,7 @@ const xxx = () => {
     try {
       await login({email, password});
       console.log('in component try after log in');
-      router.push('/profile');
+      router.replace('/(tabs)/profile');
     } catch (err) {
       let errorMessage = 'An unexpected error occurred';
       if (err instanceof Error) {
@@ -64,6 +64,7 @@ const xxx = () => {
 
   return (
     <Base>
+      <Text>/index.tsx no (tabs)</Text>
       <MyInput
         // placeholder="El. paštas"
         placeholder={t('LOGIN_PLACEHOLDER_EMAIL')}
@@ -92,7 +93,7 @@ const xxx = () => {
   );
 };
 
-export default xxx;
+export default gatekeeper;
 
 const styles = StyleSheet.create({});
 
