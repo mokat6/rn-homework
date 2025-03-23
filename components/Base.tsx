@@ -3,6 +3,7 @@ import React, {PropsWithChildren} from 'react';
 import Header from './Header';
 import OMS_Blue from '@/assets/images/OMS_Blue.svg';
 import Logo from '@/assets/images/Logo.svg';
+import theme from '@/constants/Theme';
 
 type BasePprops = PropsWithChildren<{}>;
 
@@ -10,8 +11,8 @@ const Base = ({children}: BasePprops) => {
   return (
     <View style={styles.container}>
       <Header />
-      <View style={{alignItems: 'center', padding: 20, backgroundColor: '#fff'}}>
-        <OMS_Blue style={{}} width={100} />
+      <View style={styles.topLogoCont}>
+        <OMS_Blue />
       </View>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
         <View style={styles.content}>{children}</View>
@@ -30,14 +31,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  topLogoCont: {
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: theme.colors.white,
+  },
   content: {
     flex: 1,
     gap: 15,
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.white,
     paddingHorizontal: 30,
   },
   footer: {
     alignItems: 'center',
     paddingBottom: 16,
+    backgroundColor: theme.colors.white,
   },
 });

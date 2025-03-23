@@ -17,14 +17,14 @@ export const login = async ({email, password}: {email: string; password: string}
     const data = await response.json();
 
     if (response.ok) {
-      console.log('success > ', data);
+      console.log('Login successful: ', data);
       await AsyncStorage.setItem('authToken', data.access_token);
       return data.token;
     } else {
-      throw new Error(data.message || 'Login failed');
+      throw new Error(data.message || 'Invalid credentials');
     }
   } catch (error) {
-    console.error('Login error:', error);
+    console.warn('Login failed:', error);
     throw error;
   }
 };
