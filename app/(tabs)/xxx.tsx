@@ -5,12 +5,14 @@ import MyInput from '@/components/MyInput';
 import {login} from '@/api/auth';
 import AppButton from '@/components/AppButton';
 import Toast from 'react-native-toast-message';
+import {useLanguage} from '@/contexts/LanguageContext';
 
 const xxx = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const passwordRef = useRef<TextInput>(null);
   const [isValid, setIsValid] = useState(false);
+  const {t} = useLanguage();
 
   const handleChangeEmail = useCallback((text: string) => {
     setEmail(text);
@@ -60,7 +62,8 @@ const xxx = () => {
   return (
     <Base>
       <MyInput
-        placeholder="El. paštas"
+        // placeholder="El. paštas"
+        placeholder={t('LOGIN_PLACEHOLDER_EMAIL')}
         autoCapitalize="none"
         keyboardType="email-address"
         onChangeText={handleChangeEmail}
@@ -71,14 +74,14 @@ const xxx = () => {
         ref={passwordRef}
         autoCapitalize="none"
         returnKeyType="send"
-        placeholder="Slaptažodis"
+        placeholder={t('LOGIN_PLACEHOLDER_PASSWORD')}
         onChangeText={handleChangePassword}
         isPassword
         onSubmitEditing={onPress}
       />
 
       <AppButton primary onPress={onPress} disabled={!isValid}>
-        Prisijungti
+        {t('LOGIN_BUTTON_TEXT')}
       </AppButton>
     </Base>
   );
