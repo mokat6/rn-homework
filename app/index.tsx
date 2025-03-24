@@ -64,7 +64,6 @@ const gatekeeper = () => {
 
   return (
     <Base>
-      <Text>/index.tsx no (tabs)</Text>
       <MyInput
         // placeholder="El. paštas"
         placeholder={t('LOGIN_PLACEHOLDER_EMAIL')}
