@@ -1,17 +1,20 @@
-# intro
+# Intro
 
 React Native **Expo** app
-Mock backend running on json-server https://github.com/mokat6/json-server-api
+
+Mock backend running on [json-server](https://github.com/mokat6/json-server-api)
+
 Valid user account:
-email: user@oms.lt
-password: reactnative
+- **email**: `user@oms.lt`
+- **password**: `reactnative`
 
-<video width="600" controls>
-  <source src="docs/video.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
 
-# implemented features
+
+https://github.com/user-attachments/assets/048055e3-b499-4cfe-a9e8-7bf6bd3e1cd9
+
+
+
+# Implemented features
 
 Features:
 
@@ -25,19 +28,19 @@ Features:
 
 Node 20
 
-# install
+# Install
 
 git clone
 cd rn-homework
 npm install
 
-# run
+# Run
 
 npm start
+
 Follow terminal instructions.
-Open in `Expo go` you need to have the `Expo Go` app on your physical device. THen scan the QR code
-Open in simulator - hit "a" for Android, "i" for Iphone
 
-# Welcome to your Expo app 👋
+Open in `Expo go` you need to have the `Expo Go` app on your physical device. Then scan the QR code
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Open in simulator - hit "a" for Android, "i" for iPhone
+
