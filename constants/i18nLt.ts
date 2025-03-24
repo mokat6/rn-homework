@@ -4,5 +4,3 @@ export const i18nLt = {
   LOGIN_BUTTON_TEXT: 'Prisijungti',
   LOGOUT_BUTTON_TEXT: 'Atsijungti',
 };
-
-// export default i18nLt;

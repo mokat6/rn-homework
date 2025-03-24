@@ -1,14 +1,6 @@
-import React, {useEffect} from 'react';
-import {Easing, Image, Pressable, StyleSheet, Text, View, Dimensions} from 'react-native';
-import Animated, {
-  FadeIn,
-  runOnJS,
-  SharedValue,
-  useAnimatedStyle,
-  useSharedValue,
-  withReanimatedTimer,
-  withTiming,
-} from 'react-native-reanimated';
+import React from 'react';
+import {Pressable, StyleSheet, View, Dimensions} from 'react-native';
+import Animated, {runOnJS, SharedValue, useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
 
 import {Gesture, GestureDetector, GestureHandlerRootView} from 'react-native-gesture-handler';
 
@@ -34,7 +26,6 @@ interface SliderProps {
   backgroundColor?: string;
 }
 
-// consts
 const THUMB_SIZE = 20;
 const OPACITY_MOUSE_DOWN = 1;
 const OPACITY_MOUSE_UP = 0;
@@ -105,7 +96,7 @@ const Slider = (props: SliderProps) => {
     });
 
   const handleTrackClick = (event: any) => {
-    const {locationX} = event.nativeEvent; // The position where the track was clicked
+    const {locationX} = event.nativeEvent;
 
     const stepPercentage = dataSource.step / (dataSource.maxValue - dataSource.minValue);
     console.log('steppp : ', stepPercentage);
@@ -118,7 +109,6 @@ const Slider = (props: SliderProps) => {
     const mappedValue = dataSource.minValue + (dataSource.maxValue - dataSource.minValue) * ratio;
     const snappedValue = Math.round(mappedValue / dataSource.step) * dataSource.step;
     runOnJS(handleSliderChange)(snappedValue);
-    // runOnJS(handleSliderChange)(clampedValue);
   };
 
   return (
@@ -138,16 +128,13 @@ const Slider = (props: SliderProps) => {
 
 const styles = StyleSheet.create({
   sliderCont: {
-    // backgroundColor: "#E1E7EA",
-    // height: 220, // Fixed height
-    alignItems: 'center', // Horizontally center the child
-    justifyContent: 'center', // Vertically center the child
-    flexDirection: 'column', // Default behavior (can be omitted)
-    // paddingHorizontal: 55,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
   },
   track: {
     backgroundColor: '#fff',
-    height: 8, // Increase the height to include padding
+    height: 8,
     width: '100%',
     borderRadius: 8,
   },

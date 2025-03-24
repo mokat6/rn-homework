@@ -1,9 +1,9 @@
 import {useRouter} from 'expo-router';
 
-import {StyleSheet, Text, TextInput, View} from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {StyleSheet} from 'react-native';
+import React from 'react';
 import Base from '@/components/Base';
-import {login, logout} from '@/api/auth';
+import {logout} from '@/api/auth';
 import AppButton from '@/components/AppButton';
 import Toast from 'react-native-toast-message';
 import {useLanguage} from '@/contexts/LanguageContext';
@@ -32,7 +32,6 @@ const profile = () => {
       Toast.show({
         type: 'error',
         text1: errorMessage,
-        // text2: 'Incorrect email or password',
         position: 'bottom',
         visibilityTime: 3000,
       });

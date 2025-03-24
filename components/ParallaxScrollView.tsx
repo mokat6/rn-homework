@@ -1,5 +1,5 @@
-import {useMemo, type PropsWithChildren, type ReactElement} from 'react';
-import {Dimensions, StyleSheet, Text, useWindowDimensions, View} from 'react-native';
+import type {PropsWithChildren, ReactElement} from 'react';
+import {StyleSheet, useWindowDimensions, View} from 'react-native';
 import Animated, {interpolate, useAnimatedRef, useAnimatedStyle, useScrollViewOffset} from 'react-native-reanimated';
 import {ThemedView} from '@/components/ThemedView';
 import {useBottomTabOverflow} from '@/components/ui/TabBarBackground';
@@ -8,7 +8,7 @@ import Svg, {Path} from 'react-native-svg';
 import OMS_Blue from '@/assets/images/OMS_Blue.svg';
 import Logo from '@/assets/images/Logo.svg';
 
-const HEADER_HEIGHT = 290; // Static header height
+const HEADER_HEIGHT = 290;
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
@@ -79,8 +79,6 @@ export default function ParallaxScrollView({children, headerImage, headerBackgro
           style={[styles.header, {backgroundColor: headerBackgroundColor[colorScheme]}, headerAnimatedStyle]}>
           {headerImage}
         </Animated.View>
-
-        {/* Insert dynamically generated circular separator */}
 
         <CircularSeparator />
         <View style={{alignItems: 'center', padding: 20, backgroundColor: '#fff'}}>

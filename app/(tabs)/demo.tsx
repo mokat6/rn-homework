@@ -1,9 +1,5 @@
-import {Image, StyleSheet, Platform, View, Text, ScrollView} from 'react-native';
+import {StyleSheet, View, Text, ScrollView} from 'react-native';
 
-import {HelloWave} from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import {ThemedText} from '@/components/ThemedText';
-import {ThemedView} from '@/components/ThemedView';
 import Slider from '@/components/Slider';
 import {useState} from 'react';
 import AppButton from '@/components/AppButton';

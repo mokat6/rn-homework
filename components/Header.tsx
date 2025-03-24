@@ -1,4 +1,4 @@
-import {Dimensions, StyleSheet, Text, useWindowDimensions, View} from 'react-native';
+import {Dimensions, StyleSheet, useWindowDimensions, View} from 'react-native';
 import React from 'react';
 import {LinearGradient} from 'expo-linear-gradient';
 import LanguageSwitch from './LanguageSwitch';
@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
     width: 120,
     marginTop: 100,
     marginRight: 50,
-    // borderWidth: 1,
   },
   headerContainer: {
     position: 'absolute',
