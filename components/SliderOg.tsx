@@ -1,9 +1,10 @@
+import {transform} from '@babel/core';
 import React, {useEffect} from 'react';
+// import { View } from "react-native-reanimated/lib/typescript/Animated";
 import {Easing, Image, Pressable, StyleSheet, Text, View, Dimensions} from 'react-native';
 import Animated, {
   FadeIn,
   runOnJS,
-  SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withReanimatedTimer,
@@ -11,6 +12,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import {Gesture, GestureDetector, GestureHandlerRootView} from 'react-native-gesture-handler';
+import {useThrottleCallback} from '@/hooks/useThrottleCallback';
+import {scaleZetaToMatchClamps} from 'react-native-reanimated/lib/typescript/animation/springUtils';
 
 export interface DataSource {
   minValue: number;
@@ -72,67 +75,52 @@ const Slider = (props: SliderProps) => {
     };
   });
 
+  const handleSliderChangeThrottled = useThrottleCallback(handleSliderChange, 333);
+
   const sliderDragStyle = useAnimatedStyle(() => ({
     width: fillWidth.value,
   }));
 
   const pan = Gesture.Pan()
+    .onTouchesDown(event => {
+      fillWidth.value = event.allTouches[0].x;
+    })
     .onStart(() => {
       prevFillWidth.value = fillWidth.value;
-      opacity.value = OPACITY_MOUSE_DOWN;
-      scale.value = SCALE_MOUSE_DOWN;
+      opacity.value = OPACITY_MOUSE_DOWN; //withTiming(OPACITY_MOUSE_DOWN, { duration: ANIMATION_DURATION_MOUSE_DOWN });
+      scale.value = SCALE_MOUSE_DOWN; //withTiming(SCALE_MOUSE_DOWN, { duration: ANIMATION_DURATION_MOUSE_DOWN });
     })
     .onUpdate(event => {
-      fillWidth.value = getNewFillWidth(event.translationX, prevFillWidth, trackMinWidth, trackMaxWidth);
-      console.log('fill.value ', fillWidth.value);
-      const ratio = (fillWidth.value - THUMB_SIZE) / (trackMaxWidth - THUMB_SIZE);
-      const mappedValue = dataSource.minValue + (dataSource.maxValue - dataSource.minValue) * ratio;
-      const snappedValue = Math.round(mappedValue / dataSource.step) * dataSource.step;
-      runOnJS(handleSliderChange)(snappedValue);
+      const newValue = prevFillWidth.value + event.translationX;
+      const clampedValue = Math.min(Math.max(newValue, trackMinWidth), trackMaxWidth);
+      fillWidth.value = clampedValue;
+
+      console.log('fillWidth.value >> ', fillWidth.value);
+      console.log('trackMaxWidth >> ', trackMaxWidth - paddingHorizontal);
+      const valueRatio = (fillWidth.value - paddingHorizontal / 2) / (trackMaxWidth - paddingHorizontal / 2);
+      runOnJS(handleSliderChangeThrottled)(valueRatio);
     })
     .onEnd(() => {
-      const ratio = (fillWidth.value - paddingHorizontal / 2) / (trackMaxWidth - paddingHorizontal / 2);
-      const mappedValue = dataSource.minValue + ratio * (dataSource.maxValue - dataSource.minValue);
-
-      const snappedValue = Math.round(mappedValue / dataSource.step) * dataSource.step;
-      const snappedRatio = (snappedValue - dataSource.minValue) / (dataSource.maxValue - dataSource.minValue);
-      const snappedFillWidth = snappedRatio * (trackMaxWidth - paddingHorizontal / 2) + paddingHorizontal / 2;
-      fillWidth.value = withTiming(snappedFillWidth, {duration: 300});
-
-      // thumb special effect
       opacity.value = withTiming(OPACITY_MOUSE_UP, {duration: ANIMATION_DURATION_MOUSE_UP});
       scale.value = withTiming(SCALE_MOUSE_UP, {duration: ANIMATION_DURATION_MOUSE_UP});
     });
 
-  const handleTrackClick = (event: any) => {
-    const {locationX} = event.nativeEvent; // The position where the track was clicked
-
-    const stepPercentage = dataSource.step / (dataSource.maxValue - dataSource.minValue);
-    console.log('steppp : ', stepPercentage);
-    const stepInSlider = stepPercentage * trackMaxWidth;
-    console.log('normalized step : ', stepInSlider);
-    const moveBy = locationX > fillWidth.value ? stepInSlider : -stepInSlider;
-    fillWidth.value = withTiming(fillWidth.value + moveBy, {duration: 300});
-
-    const ratio = (fillWidth.value - THUMB_SIZE) / (trackMaxWidth - THUMB_SIZE);
-    const mappedValue = dataSource.minValue + (dataSource.maxValue - dataSource.minValue) * ratio;
-    const snappedValue = Math.round(mappedValue / dataSource.step) * dataSource.step;
-    runOnJS(handleSliderChange)(snappedValue);
-    // runOnJS(handleSliderChange)(clampedValue);
-  };
-
   return (
-    <GestureHandlerRootView style={[styles.sliderCont, {height, paddingHorizontal, backgroundColor}]}>
-      <Pressable style={[styles.track]} onPress={handleTrackClick}>
-        <Animated.View style={[styles.fill, {backgroundColor: color}, sliderDragStyle]}>
-          <GestureDetector gesture={pan}>
-            <View style={[styles.thumb, {backgroundColor: color}]}>
-              <Animated.View style={[styles.thumb, styles.thumbAnimation, {backgroundColor: color}, animationStyle]} />
-            </View>
-          </GestureDetector>
-        </Animated.View>
-      </Pressable>
-    </GestureHandlerRootView>
+    <>
+      <GestureHandlerRootView style={[styles.sliderCont, {height, paddingHorizontal, backgroundColor}]}>
+        <GestureDetector gesture={pan}>
+          <View style={[styles.track, {}]}>
+            <Animated.View style={[styles.fill, {backgroundColor: color}, sliderDragStyle]}>
+              <View style={[styles.thumb, {backgroundColor: color}]}>
+                <Animated.View
+                  style={[styles.thumb, styles.thumbAnimation, {backgroundColor: color}, animationStyle]}
+                />
+              </View>
+            </Animated.View>
+          </View>
+        </GestureDetector>
+      </GestureHandlerRootView>
+    </>
   );
 };
 
@@ -173,15 +161,3 @@ const styles = StyleSheet.create({
 });
 
 export default Slider;
-
-const getNewFillWidth = (
-  translateX: number,
-  prevFillWidth: SharedValue<number>,
-  trackMinWidth: number,
-  trackMaxWidth: number,
-) => {
-  'worklet';
-
-  const newValue = prevFillWidth.value + translateX;
-  return Math.min(Math.max(newValue, trackMinWidth), trackMaxWidth);
-};
