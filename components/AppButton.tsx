@@ -1,5 +1,5 @@
-import {Pressable, StyleSheet, Text, View, ViewStyle} from 'react-native';
-import React, {useRef} from 'react';
+import {Pressable, StyleSheet, Text, ViewStyle} from 'react-native';
+import React from 'react';
 import theme from '@/constants/Theme';
 import Animated, {useSharedValue, useAnimatedStyle, withSpring} from 'react-native-reanimated';
 

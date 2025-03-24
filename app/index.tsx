@@ -50,7 +50,6 @@ const gatekeeper = () => {
       Toast.show({
         type: 'error',
         text1: errorMessage,
-        // text2: 'Incorrect email or password',
         position: 'bottom',
         visibilityTime: 3000,
       });
@@ -65,14 +64,13 @@ const gatekeeper = () => {
   return (
     <Base>
       <MyInput
-        // placeholder="El. paštas"
+        floating
         placeholder={t('LOGIN_PLACEHOLDER_EMAIL')}
         autoCapitalize="none"
         keyboardType="email-address"
         onChangeText={handleChangeEmail}
         onEndEditing={handleEmailSubmit}
         returnKeyType="next"
-        floating
       />
       <MyInput
         ref={passwordRef}

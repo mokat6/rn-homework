@@ -1,13 +1,4 @@
-import {
-  ReturnKeyTypeOptions,
-  StyleSheet,
-  Text,
-  TextInput,
-  TextInputProps,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import {StyleSheet, TextInput, TextInputProps, TouchableOpacity, View, ViewStyle} from 'react-native';
 import React, {forwardRef, useEffect, useState} from 'react';
 import {Ionicons} from '@expo/vector-icons';
 import Animated, {Easing, useSharedValue, withTiming, interpolate, useAnimatedStyle} from 'react-native-reanimated';
@@ -59,8 +50,8 @@ const MyInput = forwardRef<TextInput, MyInputProps>(
       if (!floating) {
       }
       return {
-        top: interpolate(placeholderAnim.value, [0, 1], [12, -10]), // Control vertical position
-        fontSize: interpolate(placeholderAnim.value, [0, 1], [16, 12]), // Control font size
+        top: interpolate(placeholderAnim.value, [0, 1], [12, -10]),
+        fontSize: interpolate(placeholderAnim.value, [0, 1], [16, 12]),
       };
     });
 
@@ -70,7 +61,7 @@ const MyInput = forwardRef<TextInput, MyInputProps>(
         <TextInput
           ref={ref}
           style={styles.input}
-          secureTextEntry={isPassword && !isPasswordVisible} // Toggle password visibility
+          secureTextEntry={isPassword && !isPasswordVisible}
           onChangeText={handleChangeText}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -97,11 +88,10 @@ const styles = StyleSheet.create({
     borderColor: '#D0D5DD',
     borderRadius: 6,
     paddingHorizontal: 16,
-    // width: '90%',
     alignSelf: 'center',
   },
   input: {
-    flex: 1, // Take up all available space
+    flex: 1,
     paddingVertical: 14,
   },
   icon: {
@@ -117,6 +107,5 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     paddingHorizontal: 8,
     color: theme.colors.secondary,
-    // fontWeight: 'bold',
   },
 });

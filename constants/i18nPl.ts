@@ -4,5 +4,3 @@ export const i18nPl = {
   LOGIN_BUTTON_TEXT: 'Zaloguj się',
   LOGOUT_BUTTON_TEXT: 'wylogować się',
 };
-
-// export default i18nPl;

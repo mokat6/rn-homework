@@ -1,19 +1,9 @@
-import {transform} from '@babel/core';
-import React, {useEffect} from 'react';
-// import { View } from "react-native-reanimated/lib/typescript/Animated";
-import {Easing, Image, Pressable, StyleSheet, Text, View, Dimensions} from 'react-native';
-import Animated, {
-  FadeIn,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withReanimatedTimer,
-  withTiming,
-} from 'react-native-reanimated';
+import React from 'react';
+import {StyleSheet, View, Dimensions} from 'react-native';
+import Animated, {runOnJS, useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
 
 import {Gesture, GestureDetector, GestureHandlerRootView} from 'react-native-gesture-handler';
 import {useThrottleCallback} from '@/hooks/useThrottleCallback';
-import {scaleZetaToMatchClamps} from 'react-native-reanimated/lib/typescript/animation/springUtils';
 
 export interface DataSource {
   minValue: number;
@@ -87,8 +77,8 @@ const Slider = (props: SliderProps) => {
     })
     .onStart(() => {
       prevFillWidth.value = fillWidth.value;
-      opacity.value = OPACITY_MOUSE_DOWN; //withTiming(OPACITY_MOUSE_DOWN, { duration: ANIMATION_DURATION_MOUSE_DOWN });
-      scale.value = SCALE_MOUSE_DOWN; //withTiming(SCALE_MOUSE_DOWN, { duration: ANIMATION_DURATION_MOUSE_DOWN });
+      opacity.value = OPACITY_MOUSE_DOWN;
+      scale.value = SCALE_MOUSE_DOWN;
     })
     .onUpdate(event => {
       const newValue = prevFillWidth.value + event.translationX;
@@ -126,16 +116,13 @@ const Slider = (props: SliderProps) => {
 
 const styles = StyleSheet.create({
   sliderCont: {
-    // backgroundColor: "#E1E7EA",
-    // height: 220, // Fixed height
-    alignItems: 'center', // Horizontally center the child
-    justifyContent: 'center', // Vertically center the child
-    flexDirection: 'column', // Default behavior (can be omitted)
-    // paddingHorizontal: 55,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
   },
   track: {
     backgroundColor: '#fff',
-    height: 8, // Increase the height to include padding
+    height: 8,
     width: '100%',
     borderRadius: 8,
   },
