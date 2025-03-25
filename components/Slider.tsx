@@ -11,22 +11,23 @@ export interface DataSource {
   minValue: number;
   maxValue: number;
   step: number;
+  initValue: number;
 }
 
 const dataSourceEmpty: DataSource = {
   minValue: 0,
   maxValue: 1,
-  step: 0.05,
+  step: 0.01,
+  initValue: 0.35,
 };
 
 interface SliderProps {
-  dataSource: DataSource;
   handleSliderChange: (value: number) => void;
-  initValue?: number;
-  color?: string;
+  dataSource?: DataSource;
+  backgroundColor?: string;
+  progressBarColor?: string;
   paddingHorizontal?: number;
   height?: number;
-  backgroundColor?: string;
 }
 
 const THUMB_SIZE = 20;
@@ -34,15 +35,13 @@ const OPACITY_MOUSE_DOWN = 1;
 const OPACITY_MOUSE_UP = 0;
 const SCALE_MOUSE_DOWN = 0.2;
 const SCALE_MOUSE_UP = 3;
-const DEFAULT_COLOR = 'blue';
 const ANIMATION_DURATION_MOUSE_UP = 500;
 
 const DEFAULT_FILL_COLOR = '#00f';
 
 const Slider = (props: SliderProps) => {
   const {
-    initValue = 0,
-    color = DEFAULT_COLOR,
+    progressBarColor = 'blue',
     paddingHorizontal = 100,
     height = 220,
     handleSliderChange,
@@ -55,8 +54,8 @@ const Slider = (props: SliderProps) => {
   const dataTotalRange = dataSource.maxValue - dataSource.minValue;
   const sliderStep = dataSource.step / dataTotalRange;
 
-  const sliderRatio = useSharedValue(initValue / dataTotalRange);
-  const prevSliderRatio = useSharedValue(initValue);
+  const sliderRatio = useSharedValue((dataSource.initValue - dataSource.minValue) / dataTotalRange);
+  const prevSliderRatio = useSharedValue(dataSource.initValue);
 
   const opacity = useSharedValue(0);
   const scale = useSharedValue(1);
@@ -86,9 +85,9 @@ const Slider = (props: SliderProps) => {
       sliderRatio.value = newSliderRatio;
 
       // return data value to slider parent component
-      const dataValue = dataTotalRange * newSliderRatio;
-      const snapped = Math.round(dataValue / dataSource.step) * dataSource.step;
-      runOnJS(handleSliderChange)(snapped);
+      const dataRangeValue = dataTotalRange * newSliderRatio;
+      const snapped = Math.round(dataRangeValue / dataSource.step) * dataSource.step;
+      runOnJS(handleSliderChange)(parseFloat((dataSource.minValue + snapped).toFixed(2)));
     })
     .onEnd(() => {
       // snap ratio to step
@@ -106,15 +105,15 @@ const Slider = (props: SliderProps) => {
     const newSliderRatio = sliderRatio.value + (tapAtRatio > sliderRatio.value ? sliderStep : -sliderStep);
     sliderRatio.value = newSliderRatio;
 
-    const dataValue = dataTotalRange * newSliderRatio;
-    const snapped = Math.round(dataValue / dataSource.step) * dataSource.step;
-    runOnJS(handleSliderChange)(snapped);
+    const dataRangeValue = dataTotalRange * newSliderRatio;
+    const snapped = Math.round(dataRangeValue / dataSource.step) * dataSource.step;
+    runOnJS(handleSliderChange)(parseFloat((dataSource.minValue + snapped).toFixed(2)));
   };
 
   return (
     <GestureHandlerRootView style={[styles.container, {height, paddingHorizontal, backgroundColor}]}>
       <Pressable style={[styles.track]} onPress={handleTrackClick} hitSlop={{top: 30, bottom: 30}}>
-        <Animated.View style={[styles.progressBar, {backgroundColor: color}, progressBarStyle]}>
+        <Animated.View style={[styles.progressBar, {backgroundColor: progressBarColor}, progressBarStyle]}>
           <GestureDetector gesture={pan}>
             <View
               style={[styles.thumbHitSlop]}
@@ -123,9 +122,14 @@ const Slider = (props: SliderProps) => {
               onTouchEnd={e => {
                 e.stopPropagation();
               }}>
-              <View style={[styles.thumb, {backgroundColor: color}]}>
+              <View style={[styles.thumb, {backgroundColor: progressBarColor}]}>
                 <Animated.View
-                  style={[styles.thumb, styles.thumbAnimation, {backgroundColor: color}, fancyAnimationStyle]}
+                  style={[
+                    styles.thumb,
+                    styles.thumbAnimation,
+                    {backgroundColor: progressBarColor},
+                    fancyAnimationStyle,
+                  ]}
                 />
               </View>
             </View>
