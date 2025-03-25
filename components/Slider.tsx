@@ -1,8 +1,11 @@
 import React from 'react';
-import {Pressable, StyleSheet, View, Dimensions} from 'react-native';
-import Animated, {runOnJS, SharedValue, useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
+import {Pressable, StyleSheet, View, useWindowDimensions} from 'react-native';
+import Animated, {runOnJS, useAnimatedStyle, useSharedValue, withTiming} from 'react-native-reanimated';
 
 import {Gesture, GestureDetector, GestureHandlerRootView} from 'react-native-gesture-handler';
+
+// data value: coming from data source
+// sliderRatio: fractional value from 0 to 1 used in slider calculations
 
 export interface DataSource {
   minValue: number;
@@ -17,12 +20,12 @@ const dataSourceEmpty: DataSource = {
 };
 
 interface SliderProps {
-  initValue: number;
-  color: string;
   dataSource: DataSource;
+  handleSliderChange: (value: number) => void;
+  initValue?: number;
+  color?: string;
   paddingHorizontal?: number;
   height?: number;
-  handleSliderChange: (value: number) => void;
   backgroundColor?: string;
 }
 
@@ -31,64 +34,66 @@ const OPACITY_MOUSE_DOWN = 1;
 const OPACITY_MOUSE_UP = 0;
 const SCALE_MOUSE_DOWN = 0.2;
 const SCALE_MOUSE_UP = 3;
-
+const DEFAULT_COLOR = 'blue';
 const ANIMATION_DURATION_MOUSE_UP = 500;
 
 const DEFAULT_FILL_COLOR = '#00f';
 
-const {width} = Dimensions.get('screen');
-
 const Slider = (props: SliderProps) => {
   const {
-    initValue,
-    color,
+    initValue = 0,
+    color = DEFAULT_COLOR,
     paddingHorizontal = 100,
     height = 220,
     handleSliderChange,
     backgroundColor = '#E1E7EA',
     dataSource = dataSourceEmpty,
   } = props;
-  const fillWidth = useSharedValue(initValue);
-  const prevFillWidth = useSharedValue(initValue);
-  const trackMinWidth = THUMB_SIZE;
-  const trackMaxWidth = width - 2 * paddingHorizontal;
+
+  const {width: screenWidth} = useWindowDimensions();
+  const trackWidth = screenWidth - 2 * paddingHorizontal;
+  const dataTotalRange = dataSource.maxValue - dataSource.minValue;
+  const sliderStep = dataSource.step / dataTotalRange;
+
+  const sliderRatio = useSharedValue(initValue / dataTotalRange);
+  const prevSliderRatio = useSharedValue(initValue);
 
   const opacity = useSharedValue(0);
   const scale = useSharedValue(1);
 
-  const animationStyle = useAnimatedStyle(() => {
+  const fancyAnimationStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
       transform: [{scale: scale.value}],
     };
   });
 
-  const sliderDragStyle = useAnimatedStyle(() => ({
-    width: fillWidth.value,
+  const progressBarStyle = useAnimatedStyle(() => ({
+    width: sliderRatio.value * trackWidth,
   }));
 
   const pan = Gesture.Pan()
     .onStart(() => {
-      prevFillWidth.value = fillWidth.value;
+      prevSliderRatio.value = sliderRatio.value;
       opacity.value = OPACITY_MOUSE_DOWN;
       scale.value = SCALE_MOUSE_DOWN;
     })
     .onUpdate(event => {
-      fillWidth.value = getNewFillWidth(event.translationX, prevFillWidth, trackMinWidth, trackMaxWidth);
-      console.log('fill.value ', fillWidth.value);
-      const ratio = (fillWidth.value - THUMB_SIZE) / (trackMaxWidth - THUMB_SIZE);
-      const mappedValue = dataSource.minValue + (dataSource.maxValue - dataSource.minValue) * ratio;
-      const snappedValue = Math.round(mappedValue / dataSource.step) * dataSource.step;
-      runOnJS(handleSliderChange)(snappedValue);
+      // calculate new sliderRatio 0 - 1
+      const newProgressWidth = prevSliderRatio.value * trackWidth + event.translationX;
+      const clamped = Math.min(Math.max(newProgressWidth, 0), trackWidth);
+      const newSliderRatio = clamped / trackWidth;
+      sliderRatio.value = newSliderRatio;
+
+      // return data value to slider parent component
+      const dataValue = dataTotalRange * newSliderRatio;
+      const snapped = Math.round(dataValue / dataSource.step) * dataSource.step;
+      runOnJS(handleSliderChange)(snapped);
     })
     .onEnd(() => {
-      const ratio = (fillWidth.value - paddingHorizontal / 2) / (trackMaxWidth - paddingHorizontal / 2);
-      const mappedValue = dataSource.minValue + ratio * (dataSource.maxValue - dataSource.minValue);
-
-      const snappedValue = Math.round(mappedValue / dataSource.step) * dataSource.step;
-      const snappedRatio = (snappedValue - dataSource.minValue) / (dataSource.maxValue - dataSource.minValue);
-      const snappedFillWidth = snappedRatio * (trackMaxWidth - paddingHorizontal / 2) + paddingHorizontal / 2;
-      fillWidth.value = withTiming(snappedFillWidth, {duration: 300});
+      // snap ratio to step
+      const sliderRatioSnapped = Math.round(sliderRatio.value / sliderStep) * sliderStep;
+      sliderRatio.value = withTiming(sliderRatioSnapped, {duration: 300});
 
       // thumb special effect
       opacity.value = withTiming(OPACITY_MOUSE_UP, {duration: ANIMATION_DURATION_MOUSE_UP});
@@ -97,27 +102,32 @@ const Slider = (props: SliderProps) => {
 
   const handleTrackClick = (event: any) => {
     const {locationX} = event.nativeEvent;
+    const tapAtRatio = locationX / trackWidth;
+    const newSliderRatio = sliderRatio.value + (tapAtRatio > sliderRatio.value ? sliderStep : -sliderStep);
+    sliderRatio.value = newSliderRatio;
 
-    const stepPercentage = dataSource.step / (dataSource.maxValue - dataSource.minValue);
-    console.log('steppp : ', stepPercentage);
-    const stepInSlider = stepPercentage * trackMaxWidth;
-    console.log('normalized step : ', stepInSlider);
-    const moveBy = locationX > fillWidth.value ? stepInSlider : -stepInSlider;
-    fillWidth.value = withTiming(fillWidth.value + moveBy, {duration: 300});
-
-    const ratio = (fillWidth.value - THUMB_SIZE) / (trackMaxWidth - THUMB_SIZE);
-    const mappedValue = dataSource.minValue + (dataSource.maxValue - dataSource.minValue) * ratio;
-    const snappedValue = Math.round(mappedValue / dataSource.step) * dataSource.step;
-    runOnJS(handleSliderChange)(snappedValue);
+    const dataValue = dataTotalRange * newSliderRatio;
+    const snapped = Math.round(dataValue / dataSource.step) * dataSource.step;
+    runOnJS(handleSliderChange)(snapped);
   };
 
   return (
-    <GestureHandlerRootView style={[styles.sliderCont, {height, paddingHorizontal, backgroundColor}]}>
-      <Pressable style={[styles.track]} onPress={handleTrackClick}>
-        <Animated.View style={[styles.fill, {backgroundColor: color}, sliderDragStyle]}>
+    <GestureHandlerRootView style={[styles.container, {height, paddingHorizontal, backgroundColor}]}>
+      <Pressable style={[styles.track]} onPress={handleTrackClick} hitSlop={{top: 30, bottom: 30}}>
+        <Animated.View style={[styles.progressBar, {backgroundColor: color}, progressBarStyle]}>
           <GestureDetector gesture={pan}>
-            <View style={[styles.thumb, {backgroundColor: color}]}>
-              <Animated.View style={[styles.thumb, styles.thumbAnimation, {backgroundColor: color}, animationStyle]} />
+            <View
+              style={[styles.thumbHitSlop]}
+              /* the two props to stop tap event propagation*/
+              onStartShouldSetResponder={event => true}
+              onTouchEnd={e => {
+                e.stopPropagation();
+              }}>
+              <View style={[styles.thumb, {backgroundColor: color}]}>
+                <Animated.View
+                  style={[styles.thumb, styles.thumbAnimation, {backgroundColor: color}, fancyAnimationStyle]}
+                />
+              </View>
             </View>
           </GestureDetector>
         </Animated.View>
@@ -127,7 +137,7 @@ const Slider = (props: SliderProps) => {
 };
 
 const styles = StyleSheet.create({
-  sliderCont: {
+  container: {
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
@@ -138,37 +148,33 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 8,
   },
-  fill: {
+  progressBar: {
     backgroundColor: DEFAULT_FILL_COLOR,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-end',
-    borderRadius: 8,
+    borderRadius: 0,
+  },
+  thumbHitSlop: {
+    padding: 20,
+    borderWidth: 1,
+    borderRadius: 40 / 2,
+    position: 'relative', // which is the default value
+    right: -20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   thumb: {
     width: THUMB_SIZE,
     height: THUMB_SIZE,
     backgroundColor: DEFAULT_FILL_COLOR,
     borderRadius: THUMB_SIZE / 2,
-    justifyContent: 'center',
-    alignItems: 'center',
+    opacity: 0.5,
+    position: 'absolute',
   },
   thumbAnimation: {
-    backgroundColor: DEFAULT_FILL_COLOR,
     opacity: 0.7,
   },
 });
 
 export default Slider;
-
-const getNewFillWidth = (
-  translateX: number,
-  prevFillWidth: SharedValue<number>,
-  trackMinWidth: number,
-  trackMaxWidth: number,
-) => {
-  'worklet';
-
-  const newValue = prevFillWidth.value + translateX;
-  return Math.min(Math.max(newValue, trackMinWidth), trackMaxWidth);
-};

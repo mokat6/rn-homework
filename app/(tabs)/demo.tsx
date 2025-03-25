@@ -24,7 +24,8 @@ export default function DemoScreen() {
 
   return (
     <>
-      <ScrollView contentContainerStyle={styles.screen}>
+      {/* <ScrollView contentContainerStyle={styles.screen}> */}
+      <View>
         <View>
           <Text>With Data Source Obj, with step</Text>
           <Slider
@@ -61,7 +62,7 @@ export default function DemoScreen() {
           <AppButton secondary>type: secondary</AppButton>
           <AppButton outline> type: outline </AppButton>
         </View>
-      </ScrollView>
+      </View>
     </>
   );
 }
