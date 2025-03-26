@@ -10,10 +10,10 @@ const {height: screenHeight} = Dimensions.get('window'); // Get full screen heig
 const HEADER_HEIGHT = 280;
 
 const Header = () => {
-  const {width: screenWidth} = useWindowDimensions();
-
+  const {width} = useWindowDimensions();
+  const screenWidth = width + 10; // slightly wider, ensures no empty space near edges
   const CircularSeparator = () => {
-    const quadBezierHeight = Math.max(screenWidth / 9.5); // the aspect ratio for one eighth of a perfect circle
+    const quadBezierHeight = Math.floor(screenWidth / 9.5); // the aspect ratio for one eighth of a perfect circle
 
     const controlPoint = {
       x: screenWidth / 2,
@@ -33,7 +33,7 @@ const Header = () => {
     `;
 
     return (
-      <View style={{marginTop: -quadBezierHeight}}>
+      <View style={{alignSelf: 'center'}}>
         <Svg height={quadBezierHeight} width={screenWidth} viewBox={`0 0 ${screenWidth} ${quadBezierHeight}`}>
           <Path d={svgPath} fill="#fff" />
         </Svg>
