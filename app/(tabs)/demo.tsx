@@ -5,20 +5,18 @@ import {useState} from 'react';
 import AppButton from '@/components/AppButton';
 import SliderOg from '@/components/SliderOg';
 
-const INIT_VALUE = 20;
-
 const sliderDataSource = {
-  minValue: 0,
-  maxValue: 100,
-  step: 10,
+  minValue: -20,
+  maxValue: 75,
+  step: 5,
+  initValue: 20,
 };
 
 export default function DemoScreen() {
-  const [number, setNumber] = useState(INIT_VALUE);
+  const [number, setNumber] = useState(sliderDataSource.initValue);
   const [number2, setNumber2] = useState(0.2);
 
   const handleSliderChange = (newValue: number) => {
-    console.log('slider change');
     setNumber(newValue);
   };
 
@@ -30,10 +28,9 @@ export default function DemoScreen() {
           <Text>With Data Source Obj, with step</Text>
           <Slider
             handleSliderChange={handleSliderChange}
-            initValue={INIT_VALUE}
-            color="#00A6F5"
+            progressBarColor="#00A6F5"
             paddingHorizontal={70}
-            dataSource={sliderDataSource}
+            // dataSource={sliderDataSource}
             // height={10}
           />
           <View>
