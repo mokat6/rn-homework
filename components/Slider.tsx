@@ -100,8 +100,10 @@ const Slider = (props: SliderProps) => {
     });
 
   const handleTrackClick = (event: any) => {
-    const {locationX} = event.nativeEvent;
-    const tapAtRatio = locationX / trackWidth;
+    const {nativeEvent} = event;
+    const tapX = nativeEvent.locationX ?? nativeEvent.offsetX; // on web locationX undefined
+
+    const tapAtRatio = tapX / trackWidth;
     const newSliderRatio = sliderRatio.value + (tapAtRatio > sliderRatio.value ? sliderStep : -sliderStep);
     sliderRatio.value = newSliderRatio;
 
