@@ -3,4 +3,6 @@ export const i18nPl = {
   LOGIN_PLACEHOLDER_PASSWORD: 'Hasło',
   LOGIN_BUTTON_TEXT: 'Zaloguj się',
   LOGOUT_BUTTON_TEXT: 'wylogować się',
+  PROFILE_EMAIL: 'El. paštas',
+  PROFILE_DESCRIPTION: 'Bolimbisi',
 };

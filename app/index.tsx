@@ -7,6 +7,7 @@ import {login} from '@/api/auth';
 import AppButton from '@/components/AppButton';
 import Toast from 'react-native-toast-message';
 import {useLanguage} from '@/contexts/LanguageContext';
+import {useUser} from '@/contexts/UserContext';
 
 const gatekeeper = () => {
   const [email, setEmail] = useState<string>('');
@@ -15,6 +16,7 @@ const gatekeeper = () => {
   const [isValid, setIsValid] = useState(false);
   const {t} = useLanguage();
   const router = useRouter();
+  const {setUser} = useUser();
 
   const handleChangeEmail = useCallback((text: string) => {
     setEmail(text);
@@ -36,8 +38,8 @@ const gatekeeper = () => {
     console.log('password: ', password);
 
     try {
-      await login({email, password});
-      console.log('in component try after log in');
+      const user = await login({email, password});
+      setUser(user);
       router.replace('/(tabs)/profile');
     } catch (err) {
       let errorMessage = 'An unexpected error occurred';

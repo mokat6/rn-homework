@@ -3,4 +3,6 @@ export const i18nLt = {
   LOGIN_PLACEHOLDER_PASSWORD: 'Slaptažodis',
   LOGIN_BUTTON_TEXT: 'Prisijungti',
   LOGOUT_BUTTON_TEXT: 'Atsijungti',
+  PROFILE_EMAIL: 'El. paštas',
+  PROFILE_DESCRIPTION: 'Aprašymas',
 };

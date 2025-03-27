@@ -9,6 +9,7 @@ import Toast from 'react-native-toast-message';
 import {LanguageProvider} from '@/contexts/LanguageContext';
 
 import {useColorScheme} from '@/hooks/useColorScheme';
+import {UserProvider} from '@/contexts/UserContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -31,16 +32,18 @@ export default function RootLayout() {
   }
 
   return (
-    <LanguageProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="index" options={{headerShown: false}} />
-          <Stack.Screen name="(tabs)" options={{headerShown: false}} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <Toast />
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </LanguageProvider>
+    <UserProvider>
+      <LanguageProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="index" options={{headerShown: false}} />
+            <Stack.Screen name="(tabs)" options={{headerShown: false}} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <Toast />
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </LanguageProvider>
+    </UserProvider>
   );
 }

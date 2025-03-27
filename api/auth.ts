@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Platform} from 'react-native';
 
-const API_URL_BASE = 'http://51.21.106.196:8000/';
+export const API_URL_BASE = 'http://51.21.106.196:8000';
 
 export const login = async ({email, password}: {email: string; password: string}) => {
   try {
-    const response = await fetch(`${API_URL_BASE}auth/login`, {
+    const response = await fetch(`${API_URL_BASE}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -19,7 +19,8 @@ export const login = async ({email, password}: {email: string; password: string}
     if (response.ok) {
       console.log('Login successful: ', data);
       await AsyncStorage.setItem('authToken', data.access_token);
-      return data.token;
+      await AsyncStorage.setItem('user', JSON.stringify(data.user));
+      return data.user;
     } else {
       throw new Error(data.message || 'Invalid credentials');
     }
@@ -52,7 +53,7 @@ export const logout = async () => {
       throw new Error('No token found');
     }
 
-    const response = await fetch(`${API_URL_BASE}auth/logout`, {
+    const response = await fetch(`${API_URL_BASE}/auth/logout`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
