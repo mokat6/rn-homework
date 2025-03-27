@@ -56,10 +56,8 @@ const profile = () => {
         if (translateKey === undefined) return null;
 
         return (
-          <View style={{flexDirection: 'row', gap: 10}}>
-            <Text key={value} style={{fontFamily: theme.fonts.bold}}>
-              {t(translateKey) || key}:
-            </Text>
+          <View key={value} style={{flexDirection: 'row', gap: 10}}>
+            <Text style={{fontFamily: theme.fonts.bold}}>{t(translateKey) || key}:</Text>
             <Text>{value}</Text>
           </View>
         );
