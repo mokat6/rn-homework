@@ -1,6 +1,5 @@
 import React, {createContext, useState, useEffect, useContext} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Appearance} from 'react-native';
 import {DarkTheme, DefaultTheme, ThemeProvider as ThemeProviderNav} from '@react-navigation/native';
 
 const STORAGE_KEY = 'themePreference';
